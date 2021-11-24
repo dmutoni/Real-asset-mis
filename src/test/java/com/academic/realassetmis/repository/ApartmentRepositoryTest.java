@@ -5,33 +5,19 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.academic.realassetmis.models.Apartment;
-import com.academic.realassetmis.models.dto.ApartmentDto;
 import com.academic.realassetmis.repositories.IApartmentRepository;
-import com.academic.realassetmis.services.ApartmentService;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class ApartmentRepositoryTest {
-    @Mock
-    private IApartmentRepository apartmentRepositoryMock;
-
-    @InjectMocks
-    private ApartmentService apartmentService;
-
     @Autowired
     private IApartmentRepository apartmentRepository;
 
@@ -52,14 +38,20 @@ public class ApartmentRepositoryTest {
     }
     @Test
     public void saveOne() {
-        Apartment dto = new Apartment("Akarabo", "nyabihu", "Stanley", 150);
-        Apartment apartmentOption = apartmentRepository.save(dto);
-        assertTrue(apartmentOption.getId() != null);
+        Apartment apartment = new Apartment("Akarabo", "nyabihu", "Stanley", 150);
+        Apartment apartmentOption = apartmentRepository.save(apartment);
+        assertNotNull(apartmentOption.getId());
     }
     @Test
-    public void updateOne() {
-        Apartment dto = new Apartment("Akarabo", "nyabihu", "Stanley", 150);
-        Apartment apartmentOption = apartmentRepository.save(dto);
-        assertTrue(apartmentOption.getId() != null);
+    public void deleteWithSuccess() {
+        apartmentRepository.deleteById(UUID.fromString("16e1f6fb-fae5-4dd2-9b15-622914827bdc"));
+        List<Apartment> apartments = apartmentRepository.findAll();
+        assertEquals(3, apartments.size());
+    }
+    @Test
+    public void delete_Fail(){
+        apartmentRepository.deleteById(UUID.fromString("16e1f6fb-fae5-4dd2-9b15-622914827bdc"));
+        Optional<Apartment> book = apartmentRepository.findById(UUID.fromString("16e1f6fb-fae5-4dd2-9b15-622914837bdc"));
+        assertFalse(book.isPresent());
     }
 }

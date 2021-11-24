@@ -19,51 +19,51 @@ public class ApartmentService {
 
     public List<Apartment> getAll() {
 
-        List<Apartment> apartments = apartmentRepository.findAll();
-
-        return apartments;
+        return apartmentRepository.findAll();
     }
 
     public Apartment getById(UUID id) {
         Optional<Apartment> findById = apartmentRepository.findById(id);
         if (findById.isPresent()) {
-            Apartment item = findById.get();
-            return item;
+            return findById.get();
         }
-        throw new ResourceNotFoundException("apartment","id",id);
+        throw new ResourceNotFoundException("apartment", "id", id);
     }
+
     public Apartment create(ApartmentDto department) {
         System.out.println(department);
-       Apartment apartment = new Apartment();
-       apartment.setName(department.getName());
-       apartment.setLocation(department.getLocation());
-       apartment.setPrice(department.getPrice());
-       apartment.setOwner(department.getOwner());
-
-       Apartment saved = apartmentRepository.save(apartment);
-       return saved;
-    }
-    public Apartment update(UUID id, ApartmentDto schoolDto) {
-        Apartment apartmentExists = this.apartmentRepository.getById(id);
-
         Apartment apartment = new Apartment();
+        apartment.setName(department.getName());
+        apartment.setLocation(department.getLocation());
+        apartment.setPrice(department.getPrice());
+        apartment.setOwner(department.getOwner());
 
-        if (apartmentExists != null) {
+        return apartmentRepository.save(apartment);
+    }
+
+    public Apartment update(UUID id, ApartmentDto schoolDto) {
+        Optional<Apartment> apartmentExists = this.apartmentRepository.findById(id);
+
+        if (apartmentExists.isPresent()) {
+            Apartment apartment = apartmentExists.get();
             apartment.setName(schoolDto.getName());
             apartment.setLocation(schoolDto.getLocation());
             apartment.setPrice(schoolDto.getPrice());
             apartment.setOwner(schoolDto.getOwner());
-            System.out.println(schoolDto.getPrice());
             return apartmentRepository.save(apartment);
         }
-        throw new ResourceNotFoundException("apartment","id",id);
+        throw new ResourceNotFoundException("apartment", "id", id);
     }
 
-    public Apartment deleteApartment(UUID id){
+    public Apartment deleteApartment(UUID id) {
         apartmentRepository.findById(id)
-                .orElseThrow( ()->new ResourceNotFoundException("Apartment not found with id"+ id));
+                .orElseThrow(() -> new ResourceNotFoundException("Apartment not found with id" + id));
         apartmentRepository.deleteById(id);
         return null;
+    }
+
+    public boolean existsByName(String name) {
+        return apartmentRepository.existsByName(name);
     }
 }
 

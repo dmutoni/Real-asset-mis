@@ -3,6 +3,7 @@ package com.academic.realassetmis.controllers;
 import com.academic.realassetmis.models.Apartment;
 import com.academic.realassetmis.models.dto.ApartmentDto;
 import com.academic.realassetmis.services.ApartmentService;
+import com.academic.realassetmis.utils.Exceptions.BadRequestException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -136,11 +138,10 @@ public class ApartmentControllerTest {
         Apartment updateApartment = new Apartment(UUID.fromString("16e1f6fb-fae5-4dd2-9b15-623914827bdc"), "Isange", "Nyagatare", "Stanley", 150);
         ApartmentDto apartmentDto = new ApartmentDto("Isange", "Nyagatare", "Stanley", 150);
 
-
-        when(apartmentServiceMock.update(apartment.getId(), apartmentDto)).thenReturn(null);
+        when(apartmentServiceMock.update(apartment.getId(), apartmentDto)).thenThrow(BadRequestException.class);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .put("/update-apartment?id=16e1f6fb-fae5-4dd2-9b15-622914827idc")
+                .put("/update-apartment?id=16e1f6fb-fae5-4dd2-9b15-623514827bdd")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"Isange\",\"location\":\"Nyagatare\",\"owner\":\"Stanley\",\"price\":150}");
@@ -173,17 +174,17 @@ public class ApartmentControllerTest {
     public void deleteApartment_Failed() throws Exception {
         Apartment apartment = new Apartment(UUID.fromString("16e1f6fb-fae5-4dd2-9b15-622914827bdc"), "Isange", "Nyagatare", "Stanley", 130);
 
-        when(apartmentServiceMock.deleteApartment(apartment.getId())).thenReturn(apartment);
+        when(apartmentServiceMock.getById(apartment.getId())).thenReturn(apartment);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .delete("/delete-apartment?id=16e1f6jb-fab5-4dd2-9b15-622914827bdc")
-                .contentType(MediaType.APPLICATION_JSON)
+                .get("/all-apartments/8f352825-e13f-4f3f-b0ad-e3d2fcebcfbc")
                 .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc
                 .perform(request)
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(content().json("{\"status\":false,\"message\":\"Apartment not found\"}"))
                 .andReturn();
+        when(apartmentServiceMock.deleteApartment(apartment.getId())).thenReturn(apartment);
     }
 }

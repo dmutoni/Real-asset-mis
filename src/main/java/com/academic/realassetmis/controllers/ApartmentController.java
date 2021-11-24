@@ -36,6 +36,9 @@ public class ApartmentController {
 
     @PostMapping("/save-apartment")
     public ResponseEntity<?> saveApartment(@RequestBody ApartmentDto dto) {
+        if(apartmentService.existsByName(dto.getName())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Names exists already");
+        }
         Apartment apartment = apartmentService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(apartment);
     }
@@ -50,6 +53,7 @@ public class ApartmentController {
     @DeleteMapping("/delete-apartment")
     public ResponseEntity<?> deleteApartment(@RequestParam UUID id) {
         Apartment apartment = apartmentService.deleteApartment(id);
+        System.out.println(apartment);
         return ResponseEntity.ok(apartment);
     }
 }
