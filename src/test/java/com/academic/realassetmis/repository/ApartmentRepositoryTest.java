@@ -50,8 +50,9 @@ public class ApartmentRepositoryTest {
     }
     @Test
     public void delete_Fail(){
-        apartmentRepository.deleteById(UUID.fromString("16e1f6fb-fae5-4dd2-9b15-622914827bdc"));
-        Optional<Apartment> book = apartmentRepository.findById(UUID.fromString("16e1f6fb-fae5-4dd2-9b15-622914837bdc"));
-        assertFalse(book.isPresent());
+        Optional<Apartment> apartment = apartmentRepository.findById(UUID.fromString("16e1f6fb-fae5-4dd2-9b15-622914837bdc"));
+        if (apartment.isPresent()) apartmentRepository.deleteById(UUID.fromString("16e1f6fb-fae5-4dd2-9b15-622914827bdc"));
+
+        assertFalse(apartment.isPresent());
     }
 }

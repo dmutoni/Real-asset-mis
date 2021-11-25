@@ -36,7 +36,7 @@ public class ApartmentController {
 
     @PostMapping("/save-apartment")
     public ResponseEntity<?> saveApartment(@RequestBody ApartmentDto dto) {
-        if(apartmentService.existsByName(dto.getName())){
+        if (apartmentService.existsByName(dto.getName())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Names exists already");
         }
         Apartment apartment = apartmentService.create(dto);
@@ -46,8 +46,10 @@ public class ApartmentController {
     @PutMapping("/update-apartment")
     public ResponseEntity<?> editApartment(@RequestParam UUID id, @RequestBody ApartmentDto dto) {
         Apartment apartment = apartmentService.update(id, dto);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(apartment);
+        if (apartment != null) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(apartment);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new APIResponse(false, "Apartment not found"));
     }
 
     @DeleteMapping("/delete-apartment")

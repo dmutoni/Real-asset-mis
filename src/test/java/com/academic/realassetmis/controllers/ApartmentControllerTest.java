@@ -3,7 +3,6 @@ package com.academic.realassetmis.controllers;
 import com.academic.realassetmis.models.Apartment;
 import com.academic.realassetmis.models.dto.ApartmentDto;
 import com.academic.realassetmis.services.ApartmentService;
-import com.academic.realassetmis.utils.Exceptions.BadRequestException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +14,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -116,7 +113,6 @@ public class ApartmentControllerTest {
         Apartment updateApartment = new Apartment(UUID.fromString("16e1f6fb-fae5-4dd2-9b15-622914827bdc"), "Isange", "Nyagatare", "Stanley", 150);
         ApartmentDto apartmentDto = new ApartmentDto("Isange", "Nyagatare", "Stanley", 150);
 
-
         when(apartmentServiceMock.update(apartment.getId(), apartmentDto)).thenReturn(updateApartment);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -133,12 +129,11 @@ public class ApartmentControllerTest {
     }
 
     @Test
-    public void updateApartment_Failed() throws Exception {
+    public void updateApartment_404() throws Exception {
         Apartment apartment = new Apartment(UUID.fromString("16e1f6fb-fae5-4dd2-9b15-623914827bdc"), "Isange", "Nyagatare", "Stanley", 130);
-        Apartment updateApartment = new Apartment(UUID.fromString("16e1f6fb-fae5-4dd2-9b15-623914827bdc"), "Isange", "Nyagatare", "Stanley", 150);
         ApartmentDto apartmentDto = new ApartmentDto("Isange", "Nyagatare", "Stanley", 150);
 
-        when(apartmentServiceMock.update(apartment.getId(), apartmentDto)).thenThrow(BadRequestException.class);
+        when(apartmentServiceMock.update(apartment.getId(), apartmentDto)).thenReturn(apartment);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .put("/update-apartment?id=16e1f6fb-fae5-4dd2-9b15-623514827bdd")
@@ -148,7 +143,7 @@ public class ApartmentControllerTest {
 
         MvcResult result = mockMvc
                 .perform(request)
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(content().json("{\"status\":false,\"message\":\"Apartment not found\"}"))
                 .andReturn();
     }

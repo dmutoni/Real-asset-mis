@@ -22,12 +22,13 @@ public class ApartmentService {
         return apartmentRepository.findAll();
     }
 
-    public Apartment getById(UUID id) {
-        Optional<Apartment> findById = apartmentRepository.findById(id);
-        if (findById.isPresent()) {
-            return findById.get();
-        }
-        throw new ResourceNotFoundException("apartment", "id", id);
+    public Apartment getById(UUID id) throws ResourceNotFoundException {
+
+            Optional<Apartment> findById = apartmentRepository.findById(id);
+            if (findById.isPresent()) {
+                return findById.get();
+            }
+            throw new ResourceNotFoundException("apartment", "id", id);
     }
 
     public Apartment create(ApartmentDto department) {
@@ -41,18 +42,19 @@ public class ApartmentService {
         return apartmentRepository.save(apartment);
     }
 
-    public Apartment update(UUID id, ApartmentDto schoolDto) {
+    public Apartment update(UUID id, ApartmentDto schoolDto) throws ResourceNotFoundException {
         Optional<Apartment> apartmentExists = this.apartmentRepository.findById(id);
 
-        if (apartmentExists.isPresent()) {
-            Apartment apartment = apartmentExists.get();
-            apartment.setName(schoolDto.getName());
-            apartment.setLocation(schoolDto.getLocation());
-            apartment.setPrice(schoolDto.getPrice());
-            apartment.setOwner(schoolDto.getOwner());
-            return apartmentRepository.save(apartment);
-        }
-        throw new ResourceNotFoundException("apartment", "id", id);
+            if (apartmentExists.isPresent()) {
+                Apartment apartment = apartmentExists.get();
+                apartment.setName(schoolDto.getName());
+                apartment.setLocation(schoolDto.getLocation());
+                apartment.setPrice(schoolDto.getPrice());
+                apartment.setOwner(schoolDto.getOwner());
+                return apartmentRepository.save(apartment);
+            }
+            throw new ResourceNotFoundException("apartment", "id", id);
+
     }
 
     public Apartment deleteApartment(UUID id) {
