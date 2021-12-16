@@ -28,6 +28,7 @@ public class ApartmentController {
     public ResponseEntity<?> getById(@PathVariable(name = "id") UUID id) {
 
         Apartment apartment = apartmentService.getById(id);
+
         if (apartment != null) {
             return ResponseEntity.ok(apartment);
         }
@@ -55,7 +56,6 @@ public class ApartmentController {
     @DeleteMapping("/delete-apartment")
     public ResponseEntity<?> deleteApartment(@RequestParam UUID id) {
         Apartment apartment = apartmentService.deleteApartment(id);
-        System.out.println(apartment);
         return ResponseEntity.ok(apartment);
     }
 }
